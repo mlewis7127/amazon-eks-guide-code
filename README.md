@@ -5,4 +5,7 @@ This repository provides a simple introduction to Amazon EKS. The intention is t
 
 ## Documentation
 
-- [Getting Started](docs/getting-started/index.md)
+- [Getting Started](docs/1.getting-started/index.md)
+- [VPC Setup](docs/2.vpc-setup/index.md)
+- [eks-setup](docs/3.eks-setup/index.md)
+- [argocd-setup](docs/4.argocd-setup/index.md)
