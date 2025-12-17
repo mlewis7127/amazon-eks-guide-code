@@ -1,121 +1,148 @@
+# Amazon EKS Auto Mode Overview
 
-
-
+## Shared Responsibility Model
 With Amazon EKS Auto Mode, AWS take on far more of the heavy undifferentiated lifting, including all cluster capabilities for compute, storage and networking. It also includes manging the operating system, patching and more as shown in the updated shared responsibility model for Auto Mode.
 
 ![Shared Responsibility Model](../static/shared-responsibility-model.jpg)
 
+## Update kubectl
+Once the cluster is up and running, we can update our local Kubernetes client so that it can talk to the EKS cluster.
 
+```shell
+aws eks update-kubeconfig --name <cluster-name> --region <region>
+```
 
+This merges configuration in a local `~/.kube/config` file.
 
+## Testing the cluster
+
+With the cluster started we can run the following command to see what pods are running in the cluster across all namespaces.
+
+```shell
+kubectl get pods -A
+```
+
+This returns `No resources found` in the Auto Mode cluster. We follow that up by looking at the custom resource definitions in the cluster.
+
+```shell
+terraform % kubectl get crds
+NAME                                            CREATED AT
+applicationnetworkpolicies.networking.k8s.aws   2025-12-15T13:12:45Z
+clusternetworkpolicies.networking.k8s.aws       2025-12-15T13:12:45Z
+clusterpolicyendpoints.networking.k8s.aws       2025-12-15T13:12:45Z
+cninodes.eks.amazonaws.com                      2025-12-15T13:16:12Z
+cninodes.vpcresources.k8s.aws                   2025-12-15T13:12:45Z
+ingressclassparams.eks.amazonaws.com            2025-12-15T13:16:12Z
+nodeclaims.karpenter.sh                         2025-12-15T13:16:17Z
+nodeclasses.eks.amazonaws.com                   2025-12-15T13:16:17Z
+nodediagnostics.eks.amazonaws.com               2025-12-15T13:16:18Z
+nodepools.karpenter.sh                          2025-12-15T13:16:17Z
+policyendpoints.networking.k8s.aws              2025-12-15T13:12:44Z
+securitygrouppolicies.vpcresources.k8s.aws      2025-12-15T13:12:45Z
+targetgroupbindings.eks.amazonaws.com           2025-12-15T13:16:12Z
+```
+
+Here we can see that AWS install a set of AWS-owned CRDs into an Auto Mode cluster that replace components that had to previously be manually managed such as CNI config and node groups.
+
+We can see things in here for `nodeclaims` and `nodepools` which is the underlying open-source Karpenter project that provides the node auto-scaling. We can see `targetgroupbindings` and `ingressclassparams` that come from the AWS Load Balancer Controller. The Auto Mode cluster has these CRDs managed in the control plane to enable it to be ready to serve real workloads. They are running in the control plane and not the data plane, which is why we don't see any nodes or pods.
+
+We can retrieve detailed configuration information about the cluster from the AWS control plane using the `aws describe-cluster` command. 
+
+```shell
+aws eks describe-cluster \
+--name eks-test-cluster \
+--query 'cluster.{AutoMode: computeConfig, Storage: storageConfig, Network: kubernetesNetworkConfig}' 
+```
+
+This should return the following:
 
 ```yaml
-[
-    {
-        "Attachment": {
-            "AttachTime": "2025-12-15T13:09:49+00:00",
-            "AttachmentId": "eni-attach-0a41330b4263aab9e",
-            "DeleteOnTermination": true,
-            "DeviceIndex": 1,
-            "NetworkCardIndex": 0,
-            "InstanceOwnerId": "339713109942",
-            "Status": "attached"
-        },
-        "AvailabilityZone": "eu-west-2b",
-        "Description": "Amazon EKS eks-test-cluster",
-        "Groups": [
-            {
-                "GroupId": "sg-007aeb5a2163d352b",
-                "GroupName": "eks-test-cluster-cluster-20251215130539819800000005"
-            },
-            {
-                "GroupId": "sg-00bb3d15b3c20dff3",
-                "GroupName": "eks-cluster-sg-eks-test-cluster-1909116673"
-            }
+{
+    "AutoMode": {
+        "enabled": true,
+        "nodePools": [
+            "general-purpose"
         ],
-        "InterfaceType": "interface",
-        "Ipv6Addresses": [],
-        "MacAddress": "0a:24:3c:18:75:cd",
-        "NetworkInterfaceId": "eni-06ecbd3d5689071df",
-        "OwnerId": "424727766526",
-        "PrivateDnsName": "ip-10-0-4-100.eu-west-2.compute.internal",
-        "PublicDnsName": "",
-        "PrivateIpAddress": "10.0.4.100",
-        "PrivateIpAddresses": [
-            {
-                "Primary": true,
-                "PrivateDnsName": "ip-10-0-4-100.eu-west-2.compute.internal",
-                "PrivateIpAddress": "10.0.4.100"
-            }
-        ],
-        "RequesterId": "339713109942",
-        "RequesterManaged": true,
-        "SourceDestCheck": true,
-        "Status": "in-use",
-        "SubnetId": "subnet-01e7672de9be89bc1",
-        "TagSet": [],
-        "VpcId": "vpc-0d8e1352a7bab979e",
-        "Operator": {
-            "Managed": false
-        },
-        "AvailabilityZoneId": "euw2-az3"
+        "nodeRoleArn": "arn:aws:iam::424727766526:role/eks-test-cluster-eks-auto-20251217104240154500000001"
     },
-    {
-        "Attachment": {
-            "AttachTime": "2025-12-15T13:19:38+00:00",
-            "AttachmentId": "eni-attach-0993eba273364f46a",
-            "DeleteOnTermination": true,
-            "DeviceIndex": 1,
-            "NetworkCardIndex": 0,
-            "InstanceOwnerId": "339713109942",
-            "Status": "attached"
-        },
-        "AvailabilityZone": "eu-west-2a",
-        "Description": "Amazon EKS eks-test-cluster",
-        "Groups": [
-            {
-                "GroupId": "sg-007aeb5a2163d352b",
-                "GroupName": "eks-test-cluster-cluster-20251215130539819800000005"
-            },
-            {
-                "GroupId": "sg-00bb3d15b3c20dff3",
-                "GroupName": "eks-cluster-sg-eks-test-cluster-1909116673"
-            }
-        ],
-        "InterfaceType": "interface",
-        "Ipv6Addresses": [],
-        "MacAddress": "06:2a:a9:33:c9:f5",
-        "NetworkInterfaceId": "eni-014688de9cde4c19f",
-        "OwnerId": "424727766526",
-        "PrivateDnsName": "ip-10-0-3-194.eu-west-2.compute.internal",
-        "PublicDnsName": "",
-        "PrivateIpAddress": "10.0.3.194",
-        "PrivateIpAddresses": [
-            {
-                "Primary": true,
-                "PrivateDnsName": "ip-10-0-3-194.eu-west-2.compute.internal",
-                "PrivateIpAddress": "10.0.3.194"
-            }
-        ],
-        "RequesterId": "339713109942",
-        "RequesterManaged": true,
-        "SourceDestCheck": true,
-        "Status": "in-use",
-        "SubnetId": "subnet-09b1de77219c803f1",
-        "TagSet": [],
-        "VpcId": "vpc-0d8e1352a7bab979e",
-        "Operator": {
-            "Managed": false
-        },
-        "AvailabilityZoneId": "euw2-az2"
+    "Storage": {
+        "blockStorage": {
+            "enabled": true
+        }
+    },
+    "Network": {
+        "serviceIpv4Cidr": "172.20.0.0/16",
+        "ipFamily": "ipv4",
+        "elasticLoadBalancing": {
+            "enabled": true
+        }
     }
-]
+}
+```
+
+This tells us that the cluster has Auto Mode enabled and is using the default `general-purpose` node pool. From a Storage perspective, it tells us that the cluster can provision EBS volumes, without any need to manually install and manage the EBS CSI driver. From a Network perspective, it tells us the internal CIDR range for the cluster (which is separate from the VPC CIDR range), and it shows that load balancing is enabled.
+
+## Update Storage Class
+
+
+```shell
+kubectl get storageclass
+
+NAME   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2    kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  126m
 ```
 
 
 
 
-aws ec2 describe-network-interfaces --filters "Name=vpc-id,Values=<your-vpc-id>" --query "NetworkInterfaces[?contains(Description, 'EKS')]"
+
+kubectl apply -f ingressclass.yaml
+ingressclass.networking.k8s.io/alb created
+
+kubectl create namespace game-2048 --save-config
+namespace/game-2048 created
+
+
+kubectl apply -n game-2048 -f 2048_full.yaml
+
+namespace/game-2048 configured
+deployment.apps/deployment-2048 created
+service/service-2048 created
+ingress.networking.k8s.io/ingress-2048 created
+
+
+kubectl get pods -A
+NAMESPACE   NAME                               READY   STATUS    RESTARTS   AGE
+game-2048   deployment-2048-7bf64bccb7-2n5sc   1/1     Running   0          55s
+game-2048   deployment-2048-7bf64bccb7-9kh2c   1/1     Running   0          55s
+game-2048   deployment-2048-7bf64bccb7-gp79q   1/1     Running   0          55s
+game-2048   deployment-2048-7bf64bccb7-jg98j   1/1     Running   0          55s
+game-2048   deployment-2048-7bf64bccb7-jvtq8   1/1     Running   0          55s
+
+kubectl get nodes -A
+NAME                  STATUS   ROLES    AGE   VERSION
+i-023a6d1f4815fcdb0   Ready    <none>   52s   v1.34.1-eks-113cf36
+
+
+kubectl get ingress -n game-2048
+NAME           CLASS   HOSTS   ADDRESS                                                                   PORTS   AGE
+ingress-2048   alb     *       k8s-game2048-ingress2-d14358e9b2-1354178268.eu-west-2.elb.amazonaws.com   80      78s
+
+
+
+kubectl delete -n game-2048 -f 2048_full.yaml
+Warning: deleting cluster-scoped resources, not scoped to the provided namespace
+namespace "game-2048" deleted
+deployment.apps "deployment-2048" deleted
+service "service-2048" deleted
+ingress.networking.k8s.io "ingress-2048" deleted
+
+
+
+
+
+
+
 
 
 

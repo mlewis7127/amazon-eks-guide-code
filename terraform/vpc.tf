@@ -11,8 +11,12 @@ module "vpc" {
 
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
   
-  # Cost-optimized setup: 1 public subnet, 3 private subnets
-  public_subnets  = [cidrsubnet(var.vpc_cidr, 8, 0)]
+  # Cost-optimized setup: 3 public subnets, 3 private subnets, 1 NAT gateway
+  public_subnets  = [
+    cidrsubnet(var.vpc_cidr, 8, 0),
+    cidrsubnet(var.vpc_cidr, 8, 1),
+    cidrsubnet(var.vpc_cidr, 8, 2)
+  ]
   private_subnets = [
     cidrsubnet(var.vpc_cidr, 8, 3),
     cidrsubnet(var.vpc_cidr, 8, 4),

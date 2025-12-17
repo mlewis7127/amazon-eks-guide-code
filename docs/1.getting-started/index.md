@@ -15,7 +15,7 @@ There are 3 input variables that must be set in the `terraform.tfvars` configura
 * `cluster_name` - the name for the Amazon EKS cluster
 * `vpc_cidr` - the CIDR range to use for the VPC to be created
 
-The script creates a VPC with one public subnet and three private subnets. There is only one public subnet as we want to restrict the number of NAT Gateways being stood up to keep the cost down for a sandbox / development environment.
+The script creates a VPC with three public subnets and three private subnets. There is only one NAT Gateway configured to keep the cost down for a sandbox / development environment. We need at least two public subnets because the ALB Load Balancer Controller installed with EKS Auto Mode requires at least 2 public subnets to create an internet-facing ALB which we utilise in this guide.
 
 An Amazon EKS cluster using Auto Mode is created with the private subnets provided as the location for any worker nodes.
 
