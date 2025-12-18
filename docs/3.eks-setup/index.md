@@ -45,7 +45,7 @@ The next section configures `EKS Access Entries` so that the AWS IAM identity wh
   enable_cluster_creator_admin_permissions = true
 ```
 
-The next section is the one that enables Auto Mode for the EKS cluster. This tells the module to use EKS Auto Mode instead of having to create managed node groups. More details around exactly what is created with EKS Auto Mode is defined in the next section.
+The next section is the one that enables Auto Mode for the EKS cluster. This tells the module to use EKS Auto Mode instead of having to create managed node groups. EKS Auto Mode has two built-in node pools - `system` and `general-purpose`. The `system` node pool has a taint for `CriticalAddonsOnly` and so is reserved for EKS add-ons that have this taint such as CoreDNS, and not for customer workloads. The `general-purpose` node pool is the default for supporting general purpose customer workloads. If you do not enable the `general-purpose` node pool, then you will need to configure a custom NodeClass and configure a NodePool to use it. More details around exactly what is created with EKS Auto Mode is defined in the next section.
 
 ```terraform
   # EKS Auto Mode configuration
@@ -160,3 +160,6 @@ The `Cluster Security Group` is a unified security group that is used to control
 
 ## Next Steps
 Now we have launched an Amazon EKS Auto Mode cluster, it's time to test it to understand it some more
+
+[![Next](../static/next-arrow.svg)](./auto-mode-overview.md)
+

@@ -85,6 +85,7 @@ This tells us that the cluster has Auto Mode enabled and is using the default `g
 ## Update Storage Class
 
 
+
 ```shell
 kubectl get storageclass
 

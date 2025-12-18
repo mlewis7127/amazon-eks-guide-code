@@ -1,0 +1,16 @@
+<!-- Save as: next-arrow.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="56" viewBox="0 0 220 56" role="img" aria-label="Next">
+  <title>Next</title>
+
+  <!-- Background -->
+  <rect x="1" y="1" width="218" height="54" rx="12" fill="#2563eb" stroke="#1e40af" stroke-width="2"></rect>
+
+  <!-- Text -->
+  <text x="78" y="36" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">
+    next
+  </text>
+
+  <!-- Right arrow -->
+  <path d="M140 18 L170 28 L140 38 Z" fill="#ffffff"></path>
+  <rect x="110" y="25" width="52" height="6" rx="3" fill="#ffffff"></rect>
+</svg>
