@@ -87,5 +87,5 @@ The final section tags the VPC, subnets, security groups and elastic IP to assoc
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 ```
-
+[![EKS Setup](../static/next-arrow.svg)](../3.eks-setup/index.md)
 

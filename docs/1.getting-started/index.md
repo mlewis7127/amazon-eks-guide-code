@@ -51,3 +51,5 @@ aws eks update-kubeconfig --name <cluster-name> --region <aws-region>
 terraform plan -destroy -out=destroy-plan
 terraform apply destroy-plan
 ```
+
+[![VPC Setup](../static/next-arrow.svg)](../2.vpc-setup/index.md)

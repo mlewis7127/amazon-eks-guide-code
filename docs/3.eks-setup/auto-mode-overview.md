@@ -130,6 +130,7 @@ And we will see that the storage class has been created.
 storageclass.storage.k8s.io/auto-ebs-sc created
 ```
 
+We will now see this appear when we view the storage classes available.
 
 ```shell
 kubectl get storageclass
@@ -137,6 +138,8 @@ NAME                    PROVISIONER                 RECLAIMPOLICY   VOLUMEBINDIN
 auto-ebs-sc (default)   ebs.csi.eks.amazonaws.com   Delete          WaitForFirstConsumer   true                   60s
 gp2                     kubernetes.io/aws-ebs       Delete          WaitForFirstConsumer   false                  120m
 ```
+
+As this is a new cluster, we can delete the `gp2` storage class by running `kubectl delete storageclass gp2` if we want too.
 
 
 
