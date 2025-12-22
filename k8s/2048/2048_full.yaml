@@ -29,16 +29,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: game-2048
   name: service-2048
+  namespace: game-2048
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: app-2048
   ports:
     - port: 80
       targetPort: 80
-      protocol: TCP
-  type: NodePort
-  selector:
-    app.kubernetes.io/name: app-2048
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
