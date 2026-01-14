@@ -1,0 +1,15 @@
+{
+    "argoCd": {
+      "awsIdc": {
+        "idcInstanceArn": "REPLACE_WITH_IDC_INSTANCE_ARN'",
+        "idcRegion": "REPLACE_WITH_REGION_CODE"
+      },
+      "rbacRoleMappings": [{
+        "role": "ADMIN",
+        "identities": [{
+          "id": "'REPLACE_WITH_IDC_USER_ID'",
+          "type": "SSO_USER"
+        }]
+      }]
+    }
+  }

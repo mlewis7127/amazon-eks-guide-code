@@ -12,6 +12,9 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
+destroy-plan
+tfplan
+terraform/tfplan
 
 # Kubernetes
 kubeconfig
