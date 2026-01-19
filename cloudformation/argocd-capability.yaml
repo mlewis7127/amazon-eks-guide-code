@@ -61,7 +61,6 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSSecretsManagerClientReadOnlyAccess
 
-
   # EKS Capability for ArgoCD
   ArgoCDCapability:
     Type: AWS::EKS::Capability
@@ -81,3 +80,12 @@ Resources:
                 - Id: !Ref AdminUserId
                   Type: SSO_USER
               Role: ADMIN
+            - Identities:
+                - Id: !Ref ViewerGroupId
+                  Type: SSO_GROUP
+              Role: VIEWER              
+      Tags:
+        - Key: Purpose
+          Value: ArgoCD-GitOps-Capability
+        - Key: ManagedBy
+          Value: CloudFormation

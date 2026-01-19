@@ -1,15 +1,21 @@
 {
     "argoCd": {
       "awsIdc": {
-        "idcInstanceArn": "REPLACE_WITH_IDC_INSTANCE_ARN'",
-        "idcRegion": "REPLACE_WITH_REGION_CODE"
+        "idcInstanceArn": "arn:aws:sso:::instance/ssoins-753591926c609926",
+        "idcRegion": "eu-west-2"
       },
       "rbacRoleMappings": [{
         "role": "ADMIN",
         "identities": [{
-          "id": "'REPLACE_WITH_IDC_USER_ID'",
+          "id": "9c671ed579-0f6d3d04-dc95-4ee1-b08a-c5f6d966c516",
           "type": "SSO_USER"
         }]
-      }]
-    }
+      },{
+        "role": "VIEWER",
+        "identities": [{
+          "id": "9c671ed579-f32207ad-5318-450e-97ce-d9ed9270f7c5",
+          "type": "SSO_GROUP"
+        }]
+      }
+    ]}
   }
